@@ -2,20 +2,20 @@ import 'package:brew_crew/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
-
   final Function toggleView;
-  Register({ this.toggleView });
+  Register({this.toggleView});
 
   @override
   _RegisterState createState() => _RegisterState();
 }
 
 class _RegisterState extends State<Register> {
-  
   final AuthService _auth = AuthService();
+  final _formKey = GlobalKey<FormState>();
 
   String email = "";
   String password = "";
+  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -38,20 +38,35 @@ class _RegisterState extends State<Register> {
       body: Container(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
           child: Form(
+            key: _formKey,
             child: Column(
               children: <Widget>[
                 SizedBox(
                   height: 20,
                 ),
                 TextFormField(
-                  onChanged: (value) => {
-                    setState(() => email = value)
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter email';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() => email = val);
                   },
                 ),
-                SizedBox(height: 20.0,),
+                SizedBox(
+                  height: 20.0,
+                ),
                 TextFormField(
-                  onChanged: (value) => {
-                    setState(() => password = value)
+                  validator: (val) {
+                    if(val.length < 6) {
+                      return 'Enter password with more than 6+ characters';
+                    }
+                    return null;
+                  },
+                  onChanged: (val) {
+                    setState(() => password = val);
                   },
                   obscureText: true,
                 ),
@@ -65,9 +80,19 @@ class _RegisterState extends State<Register> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
-                    print(email);
-                    print(password);
+                    if (_formKey.currentState.validate()) {
+                      dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+                      if( result == null) {
+                        setState(() {
+                          error = "Something went wrong!!";
+                        });
+                      }
+                    }
                   },
+                ),
+                SizedBox(height: 20,),
+                Text(error,
+                style: TextStyle(color : Colors.red),
                 )
               ],
             ),
