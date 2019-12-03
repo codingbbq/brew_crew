@@ -1,5 +1,7 @@
 import 'package:brew_crew/services/auth.dart';
+import 'package:brew_crew/shared/loading.dart';
 import 'package:flutter/material.dart';
+import 'package:brew_crew/shared/constants.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleView;
@@ -12,6 +14,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   // text fields state
   String email = "";
@@ -20,7 +23,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(
         backgroundColor: Colors.brown[400],
@@ -46,6 +49,7 @@ class _SignInState extends State<SignIn> {
                   height: 20,
                 ),
                 TextFormField(
+                  decoration: textDecoration.copyWith(hintText: 'Email'),
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Please enter email';
@@ -60,6 +64,7 @@ class _SignInState extends State<SignIn> {
                   height: 20.0,
                 ),
                 TextFormField(
+                  decoration: textDecoration.copyWith(hintText: 'Password'),
                   validator: (val) {
                     if (val.length < 6) {
                       return 'Enter password with more than 6+ characters';
@@ -82,10 +87,15 @@ class _SignInState extends State<SignIn> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                      setState(() {
+                        loading = true;
+                      });
+                      dynamic result = await _auth.signInWithEmailAndPassword(
+                          email, password);
                       if (result == null) {
                         setState(() {
                           error = "Something went wrong!!";
+                          loading = false;
                         });
                       }
                     }
