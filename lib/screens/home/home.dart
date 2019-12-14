@@ -24,33 +24,31 @@ class Home extends StatelessWidget {
       );
     }
 
-    return Container(
-      child: StreamProvider<List<Brew>>.value(
-        value: DatabaseService().brews,
-        child: Scaffold(
-          backgroundColor: Colors.brown[50],
-          appBar: AppBar(
-            title: Text("Brew Crew"),
-            elevation: 0.0,
-            backgroundColor: Colors.brown[400],
-            actions: <Widget>[
-              FlatButton.icon(
-                icon: Icon(Icons.person),
-                onPressed: () async {
-                  await _auth.SignOut();
-                },
-                label: Text('logout'),
-              ),
-              FlatButton.icon(
-                icon: Icon(Icons.settings),
-                onPressed: () => _showSettingsPanel(),
-                label: Text('Settings'),
-              )
-            ],
-          ),
-          body: BrewList(),
+    return StreamProvider<List<Brew>>.value(
+      value: DatabaseService().brews,
+      child: Scaffold(
+        backgroundColor: Colors.brown[50],
+        appBar: AppBar(
+          title: Text("Brew Crew"),
+          elevation: 0.0,
+          backgroundColor: Colors.brown[400],
+          actions: <Widget>[
+            FlatButton.icon(
+              icon: Icon(Icons.person),
+              onPressed: () async {
+                await _auth.SignOut();
+              },
+              label: Text('logout'),
+            ),
+            FlatButton.icon(
+              icon: Icon(Icons.settings),
+              onPressed: () => _showSettingsPanel(),
+              label: Text('Settings'),
+            )
+          ],
         ),
-      )
+        body: BrewList(),
+      ),
     );
   }
 }
